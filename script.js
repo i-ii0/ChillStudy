@@ -430,13 +430,16 @@ function hideError() {
 async function generateQuestionsFromAPI(topic) {
   const questionCount = Math.floor(Math.random() * 5) + 5; // 5-9
 
-  const prompt = `你是一个专业的教育出题专家。请为"${topic}"这个主题生成${questionCount}道选择题。
+  const systemPrompt = `你是一个专业的教育出题助手。你必须根据用户指定的主题生成题目，题目内容必须严格围绕该主题。只返回JSON格式的数据，不添加任何额外文字。`;
 
-要求：
-1. 每道题有4个选项（A/B/C/D），只有一个正确答案
-2. 题目要有教育意义，难度适中
-3. 每道题附带简短的解析
-4. 严格按照以下JSON格式返回，不要添加任何其他文字：
+  const userPrompt = `请为"${topic}"这个主题生成${questionCount}道选择题。
+
+重要要求：
+1. 所有题目必须严格围绕"${topic}"这个主题，不要生成其他主题的题目
+2. 每道题有4个选项（A/B/C/D），只有一个正确答案
+3. 题目要有教育意义，难度适中
+4. 每道题附带简短的解析
+5. 严格按照以下JSON格式返回，不要添加任何其他文字：
 
 [
   {
@@ -454,6 +457,14 @@ async function generateQuestionsFromAPI(topic) {
 
 请直接返回JSON数组，不要包含markdown代码块标记或其他文字。`;
 
+  // 调试日志：打印完整 prompt
+  console.group('%c[DeepSeek API] 请求详情', 'color: #10B981; font-weight: bold');
+  console.log('主题:', topic);
+  console.log('题目数量:', questionCount);
+  console.log('System Prompt:', systemPrompt);
+  console.log('User Prompt:', userPrompt);
+  console.groupEnd();
+
   const response = await fetch(DEEPSEEK_API_URL, {
     method: 'POST',
     headers: {
@@ -463,8 +474,8 @@ async function generateQuestionsFromAPI(topic) {
     body: JSON.stringify({
       model: 'deepseek-chat',
       messages: [
-        { role: 'system', content: '你是一个专业的教育出题助手，只返回JSON格式的数据，不添加任何额外文字。' },
-        { role: 'user', content: prompt }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
       ],
       temperature: 0.8,
       max_tokens: 4096
@@ -484,6 +495,11 @@ async function generateQuestionsFromAPI(topic) {
 
   let content = data.choices[0].message.content.trim();
 
+  // 调试日志：打印 AI 原始返回
+  console.group('%c[DeepSeek API] 原始返回', 'color: #F59E0B; font-weight: bold');
+  console.log('原始内容:', content);
+  console.groupEnd();
+
   // 清理可能的 markdown 代码块标记
   content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
 
@@ -491,6 +507,7 @@ async function generateQuestionsFromAPI(topic) {
   try {
     questions = JSON.parse(content);
   } catch (e) {
+    console.error('[DeepSeek API] JSON 解析失败，原始内容:', content);
     throw new Error('AI 返回的数据格式不正确，无法解析题目');
   }
 
@@ -499,7 +516,7 @@ async function generateQuestionsFromAPI(topic) {
   }
 
   // 验证并标准化题目格式
-  return questions.map((q, i) => ({
+  const result = questions.map((q, i) => ({
     question: q.question || `题目 ${i + 1}`,
     options: (q.options || []).map((opt, j) => ({
       label: opt.label || String.fromCharCode(65 + j),
@@ -508,6 +525,13 @@ async function generateQuestionsFromAPI(topic) {
     answer: q.answer || 'A',
     explanation: q.explanation || '暂无解析'
   }));
+
+  // 调试日志：打印解析后的题目
+  console.group('%c[DeepSeek API] 解析结果', 'color: #3B82F6; font-weight: bold');
+  console.log(`生成 ${result.length} 道题目:`, result.map(q => q.question));
+  console.groupEnd();
+
+  return result;
 }
 
 // ===== Mock 备用生成 =====
@@ -556,10 +580,11 @@ async function startQuiz(topic) {
   try {
     // 尝试调用 DeepSeek API
     if (DEEPSEEK_API_KEY === 'your-api-key-here') {
-      // 未配置 API Key，使用 Mock 数据
-      console.warn('未配置 DeepSeek API Key，使用本地题库');
-      await new Promise(r => setTimeout(r, 800)); // 模拟加载延迟
-      state.questions = generateQuestionsFromMock(state.topic);
+      // 未配置 API Key，提示用户
+      console.warn('[轻松学] 未配置 DeepSeek API Key，请在 script.js 中设置 DEEPSEEK_API_KEY');
+      hideLoading();
+      showError('未配置 API Key，无法生成「' + state.topic + '」的题目。请在 script.js 中将 DEEPSEEK_API_KEY 替换为你的 DeepSeek API Key。');
+      return;
     } else {
       state.questions = await generateQuestionsFromAPI(state.topic);
     }
