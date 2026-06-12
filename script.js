@@ -1,4 +1,8 @@
-// ===== Mock 题库数据 =====
+// ===== DeepSeek API 配置 =====
+const DEEPSEEK_API_KEY = 'your-api-key-here';
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
+
+// ===== Mock 题库数据（API 失败时备用） =====
 const MOCK_QUESTIONS = {
   'Python基础': [
     {
@@ -55,61 +59,6 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'B',
       explanation: 'Python 使用 try...except 语句进行异常处理，不同于 Java 的 try...catch。'
-    },
-    {
-      question: '以下哪个不是 Python 的基本数据类型？',
-      options: [
-        { label: 'A', text: 'int' },
-        { label: 'B', text: 'str' },
-        { label: 'C', text: 'char' },
-        { label: 'D', text: 'bool' }
-      ],
-      answer: 'C',
-      explanation: 'Python 没有 char 类型，单个字符也是 str（字符串）类型。int、str、bool 都是基本数据类型。'
-    },
-    {
-      question: 'Python 列表推导式的正确写法是？',
-      options: [
-        { label: 'A', text: '[x for x in range(10)]' },
-        { label: 'B', text: '{x for x in range(10)}' },
-        { label: 'C', text: '(x for x in range(10))' },
-        { label: 'D', text: '<x for x in range(10)>' }
-      ],
-      answer: 'A',
-      explanation: '列表推导式使用方括号 []，花括号 {} 是集合推导式，圆括号 () 是生成器表达式。'
-    },
-    {
-      question: 'Python 中 == 和 is 的区别是什么？',
-      options: [
-        { label: 'A', text: '没有区别' },
-        { label: 'B', text: '== 比较值，is 比较身份（内存地址）' },
-        { label: 'C', text: '== 比较身份，is 比较值' },
-        { label: 'D', text: 'is 只能用于数字' }
-      ],
-      answer: 'B',
-      explanation: '== 比较两个对象的值是否相等，is 比较两个对象是否是同一个对象（内存地址相同）。'
-    },
-    {
-      question: 'Python 中 with 语句的主要用途是？',
-      options: [
-        { label: 'A', text: '条件判断' },
-        { label: 'B', text: '循环控制' },
-        { label: 'C', text: '上下文管理（如自动关闭文件）' },
-        { label: 'D', text: '异常抛出' }
-      ],
-      answer: 'C',
-      explanation: 'with 语句用于上下文管理，可以自动管理资源的获取和释放，最常用于文件操作。'
-    },
-    {
-      question: '以下哪种方式可以正确创建一个空字典？',
-      options: [
-        { label: 'A', text: 'dict = []' },
-        { label: 'B', text: 'dict = {}' },
-        { label: 'C', text: 'dict = ()' },
-        { label: 'D', text: 'dict = set()' }
-      ],
-      answer: 'B',
-      explanation: '{} 创建空字典，[] 创建空列表，() 创建空元组，set() 创建空集合。'
     }
   ],
   '世界历史': [
@@ -123,17 +72,6 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'B',
       explanation: '第一次世界大战于1914年爆发，导火索是奥匈帝国皇储斐迪南大公在萨拉热窝被刺杀。'
-    },
-    {
-      question: '古埃及最著名的法老图坦卡蒙的陵墓是在哪一年被发现的？',
-      options: [
-        { label: 'A', text: '1899年' },
-        { label: 'B', text: '1912年' },
-        { label: 'C', text: '1922年' },
-        { label: 'D', text: '1935年' }
-      ],
-      answer: 'C',
-      explanation: '图坦卡蒙陵墓由英国考古学家霍华德·卡特于1922年在帝王谷发现，是保存最完好的法老陵墓之一。'
     },
     {
       question: '法国大革命爆发于哪一年？',
@@ -178,50 +116,6 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'C',
       explanation: '文艺复兴最早起源于14世纪的意大利，以佛罗伦萨为中心，后来扩展到欧洲各地。'
-    },
-    {
-      question: '柏林墙倒塌是在哪一年？',
-      options: [
-        { label: 'A', text: '1987年' },
-        { label: 'B', text: '1989年' },
-        { label: 'C', text: '1991年' },
-        { label: 'D', text: '1993年' }
-      ],
-      answer: 'B',
-      explanation: '柏林墙于1989年11月9日倒塌，标志着冷战走向终结，东西德走向统一。'
-    },
-    {
-      question: '工业革命最早发生在哪个国家？',
-      options: [
-        { label: 'A', text: '美国' },
-        { label: 'B', text: '法国' },
-        { label: 'C', text: '德国' },
-        { label: 'D', text: '英国' }
-      ],
-      answer: 'D',
-      explanation: '工业革命最早发生在18世纪60年代的英国，以蒸汽机的改良和纺织业的革新为标志。'
-    },
-    {
-      question: '古罗马帝国的官方语言是什么？',
-      options: [
-        { label: 'A', text: '希腊语' },
-        { label: 'B', text: '拉丁语' },
-        { label: 'C', text: '意大利语' },
-        { label: 'D', text: '英语' }
-      ],
-      answer: 'B',
-      explanation: '古罗马帝国的官方语言是拉丁语，它也是后来罗曼语族（法语、意大利语、西班牙语等）的源头。'
-    },
-    {
-      question: '人类历史上第一个登上月球的人是谁？',
-      options: [
-        { label: 'A', text: '巴兹·奥尔德林' },
-        { label: 'B', text: '尤里·加加林' },
-        { label: 'C', text: '尼尔·阿姆斯特朗' },
-        { label: 'D', text: '艾伦·谢泼德' }
-      ],
-      answer: 'C',
-      explanation: '尼尔·阿姆斯特朗于1969年7月20日乘坐阿波罗11号首次登上月球，留下了"人类的一大步"的名言。'
     }
   ],
   'JavaScript入门': [
@@ -246,17 +140,6 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'C',
       explanation: '这是 JavaScript 的一个历史遗留 bug。typeof null 返回 "object"，尽管 null 并不是对象。'
-    },
-    {
-      question: '以下哪个方法可以将字符串转换为整数？',
-      options: [
-        { label: 'A', text: 'Number.parseInt()' },
-        { label: 'B', text: 'String.toInt()' },
-        { label: 'C', text: 'Math.integer()' },
-        { label: 'D', text: 'convert.toInt()' }
-      ],
-      answer: 'A',
-      explanation: 'Number.parseInt() 或 parseInt() 可以将字符串解析为整数。也可以使用 Number() 进行类型转换。'
     },
     {
       question: '箭头函数与普通函数的区别之一是？',
@@ -290,50 +173,6 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'A',
       explanation: 'Promise 是 JavaScript 处理异步操作的重要方式，还有 callback 和 async/await 也是异步编程方式。'
-    },
-    {
-      question: '数组的 push() 方法的作用是？',
-      options: [
-        { label: 'A', text: '删除末尾元素' },
-        { label: 'B', text: '在开头添加元素' },
-        { label: 'C', text: '在末尾添加元素' },
-        { label: 'D', text: '删除开头元素' }
-      ],
-      answer: 'C',
-      explanation: 'push() 方法向数组末尾添加一个或多个元素，并返回新的长度。unshift() 在开头添加，pop() 删除末尾。'
-    },
-    {
-      question: 'JavaScript 中哪个对象用于存储键值对？',
-      options: [
-        { label: 'A', text: 'Array' },
-        { label: 'B', text: 'Object' },
-        { label: 'C', text: 'Set' },
-        { label: 'D', text: 'Map' }
-      ],
-      answer: 'B',
-      explanation: 'Object 是 JavaScript 中最常用的键值对存储方式。Map 也可以存储键值对，但 Object 更基础和常用。'
-    },
-    {
-      question: 'document.querySelector() 的作用是？',
-      options: [
-        { label: 'A', text: '创建新元素' },
-        { label: 'B', text: '选择第一个匹配的 DOM 元素' },
-        { label: 'C', text: '选择所有匹配的元素' },
-        { label: 'D', text: '删除元素' }
-      ],
-      answer: 'B',
-      explanation: 'querySelector() 返回文档中匹配指定 CSS 选择器的第一个元素。querySelectorAll() 返回所有匹配元素。'
-    },
-    {
-      question: 'NaN === NaN 的结果是？',
-      options: [
-        { label: 'A', text: 'true' },
-        { label: 'B', text: 'false' },
-        { label: 'C', text: 'undefined' },
-        { label: 'D', text: '报错' }
-      ],
-      answer: 'B',
-      explanation: 'NaN 是 JavaScript 中唯一一个不等于自身的值，NaN === NaN 和 NaN == NaN 都返回 false。需要用 Number.isNaN() 来判断。'
     }
   ],
   '数学基础': [
@@ -391,61 +230,6 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'B',
       explanation: '平面三角形的三个内角之和恒等于180°，这是欧几里得几何的基本定理之一。'
-    },
-    {
-      question: '以下哪个数是无理数？',
-      options: [
-        { label: 'A', text: '3.14' },
-        { label: 'B', text: '22/7' },
-        { label: 'C', text: '√2' },
-        { label: 'D', text: '0.333...' }
-      ],
-      answer: 'C',
-      explanation: '√2 是无理数，不能表示为两个整数的比。3.14 和 22/7 是有理数，0.333... = 1/3 也是有理数。'
-    },
-    {
-      question: '斐波那契数列的前6项是？',
-      options: [
-        { label: 'A', text: '1, 1, 2, 3, 5, 8' },
-        { label: 'B', text: '1, 2, 3, 4, 5, 6' },
-        { label: 'C', text: '0, 1, 1, 2, 3, 5' },
-        { label: 'D', text: '1, 2, 4, 8, 16, 32' }
-      ],
-      answer: 'A',
-      explanation: '斐波那契数列从1开始，每一项等于前两项之和：1, 1, 2, 3, 5, 8, 13, 21...（选项C也是合法的，取决于起始定义）'
-    },
-    {
-      question: 'log₁₀(1000) 等于多少？',
-      options: [
-        { label: 'A', text: '2' },
-        { label: 'B', text: '3' },
-        { label: 'C', text: '4' },
-        { label: 'D', text: '10' }
-      ],
-      answer: 'B',
-      explanation: 'log₁₀(1000) = log₁₀(10³) = 3，因为10的3次方等于1000。'
-    },
-    {
-      question: '绝对值函数 |x| 的定义是？',
-      options: [
-        { label: 'A', text: 'x 本身' },
-        { label: 'B', text: 'x 的相反数' },
-        { label: 'C', text: 'x ≥ 0 时为 x，x < 0 时为 -x' },
-        { label: 'D', text: 'x 的平方' }
-      ],
-      answer: 'C',
-      explanation: '绝对值 |x| = x（当 x ≥ 0），|x| = -x（当 x < 0）。它表示数轴上点到原点的距离，总是非负的。'
-    },
-    {
-      question: '等差数列 2, 5, 8, 11, ... 的公差是？',
-      options: [
-        { label: 'A', text: '2' },
-        { label: 'B', text: '3' },
-        { label: 'C', text: '5' },
-        { label: 'D', text: '7' }
-      ],
-      answer: 'B',
-      explanation: '等差数列的公差是相邻两项的差。5 - 2 = 3，8 - 5 = 3，11 - 8 = 3，公差为3。'
     }
   ],
   '科学常识': [
@@ -503,66 +287,10 @@ const MOCK_QUESTIONS = {
       ],
       answer: 'C',
       explanation: '皮肤是人体最大的器官，成人皮肤总面积约1.5-2平方米，重量约占体重的16%。'
-    },
-    {
-      question: '声音在空气中的传播速度约为？',
-      options: [
-        { label: 'A', text: '340 m/s' },
-        { label: 'B', text: '3400 m/s' },
-        { label: 'C', text: '34 m/s' },
-        { label: 'D', text: '34000 m/s' }
-      ],
-      answer: 'A',
-      explanation: '声音在空气中的传播速度约为340 m/s（在15°C时约340.3 m/s），远低于光速。'
-    },
-    {
-      question: '太阳系中最大的行星是？',
-      options: [
-        { label: 'A', text: '土星' },
-        { label: 'B', text: '木星' },
-        { label: 'C', text: '天王星' },
-        { label: 'D', text: '海王星' }
-      ],
-      answer: 'B',
-      explanation: '木星是太阳系中最大的行星，质量是其他所有行星质量总和的2.5倍，直径约14万公里。'
-    },
-    {
-      question: '牛顿第一定律也被称为？',
-      options: [
-        { label: 'A', text: '加速度定律' },
-        { label: 'B', text: '作用力与反作用力定律' },
-        { label: 'C', text: '惯性定律' },
-        { label: 'D', text: '万有引力定律' }
-      ],
-      answer: 'C',
-      explanation: '牛顿第一定律即惯性定律：物体在不受外力作用时，保持静止或匀速直线运动状态。'
-    },
-    {
-      question: '以下哪种气体是光合作用的原料？',
-      options: [
-        { label: 'A', text: '氧气' },
-        { label: 'B', text: '氮气' },
-        { label: 'C', text: '二氧化碳' },
-        { label: 'D', text: '氢气' }
-      ],
-      answer: 'C',
-      explanation: '光合作用利用二氧化碳和水，在光能的作用下合成有机物并释放氧气：6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂'
-    },
-    {
-      question: '绝对零度是多少摄氏度？',
-      options: [
-        { label: 'A', text: '-100°C' },
-        { label: 'B', text: '-273.15°C' },
-        { label: 'C', text: '-373.15°C' },
-        { label: 'D', text: '0°C' }
-      ],
-      answer: 'B',
-      explanation: '绝对零度为 -273.15°C（0K），是理论上可能达到的最低温度，此时粒子热运动完全停止。'
     }
   ]
 };
 
-// 通用知识题库（无匹配主题时使用）
 const GENERAL_QUESTIONS = [
   {
     question: '世界上面积最大的国家是？',
@@ -576,17 +304,6 @@ const GENERAL_QUESTIONS = [
     explanation: '俄罗斯是世界上面积最大的国家，约1710万平方公里，横跨欧亚两洲。'
   },
   {
-    question: 'HTTP 状态码 404 表示什么？',
-    options: [
-      { label: 'A', text: '服务器错误' },
-      { label: 'B', text: '页面未找到' },
-      { label: 'C', text: '请求成功' },
-      { label: 'D', text: '重定向' }
-    ],
-    answer: 'B',
-    explanation: '404 Not Found 表示服务器无法找到请求的资源。200 表示成功，500 表示服务器错误，301/302 表示重定向。'
-  },
-  {
     question: '世界上最长的河流是？',
     options: [
       { label: 'A', text: '亚马逊河' },
@@ -596,17 +313,6 @@ const GENERAL_QUESTIONS = [
     ],
     answer: 'C',
     explanation: '尼罗河全长约6650公里，是世界上最长的河流，流经非洲东北部多个国家。'
-  },
-  {
-    question: '二进制数 1010 转换为十进制是多少？',
-    options: [
-      { label: 'A', text: '8' },
-      { label: 'B', text: '10' },
-      { label: 'C', text: '12' },
-      { label: 'D', text: '14' }
-    ],
-    answer: 'B',
-    explanation: '1010₂ = 1×2³ + 0×2² + 1×2¹ + 0×2⁰ = 8 + 0 + 2 + 0 = 10'
   },
   {
     question: '地球的天然卫星是什么？',
@@ -629,39 +335,6 @@ const GENERAL_QUESTIONS = [
     ],
     answer: 'D',
     explanation: '在计算机科学中，1 KB = 2¹⁰ = 1024 字节。虽然国际单位制中1KB=1000字节，但传统计算中通常使用1024。'
-  },
-  {
-    question: '以下哪种维生素又被称为"阳光维生素"？',
-    options: [
-      { label: 'A', text: '维生素A' },
-      { label: 'B', text: '维生素B' },
-      { label: 'C', text: '维生素C' },
-      { label: 'D', text: '维生素D' }
-    ],
-    answer: 'D',
-    explanation: '维生素D被称为"阳光维生素"，因为人体皮肤在紫外线照射下可以合成维生素D。'
-  },
-  {
-    question: '世界上最深的海沟是？',
-    options: [
-      { label: 'A', text: '秘鲁-智利海沟' },
-      { label: 'B', text: '马里亚纳海沟' },
-      { label: 'C', text: '日本海沟' },
-      { label: 'D', text: '汤加海沟' }
-    ],
-    answer: 'B',
-    explanation: '马里亚纳海沟位于太平洋西部，最深处约11034米（挑战者深渊），是地球上已知最深的海沟。'
-  },
-  {
-    question: 'HTML 的全称是什么？',
-    options: [
-      { label: 'A', text: 'Hyper Text Markup Language' },
-      { label: 'B', text: 'High Tech Modern Language' },
-      { label: 'C', text: 'Hyper Transfer Markup Language' },
-      { label: 'D', text: 'Home Tool Markup Language' }
-    ],
-    answer: 'A',
-    explanation: 'HTML 全称 HyperText Markup Language（超文本标记语言），是构建网页内容的标准标记语言。'
   },
   {
     question: '以下哪个是可再生能源？',
@@ -694,6 +367,7 @@ const topicInput = $('#topic-input');
 const startBtn = $('#start-btn');
 const topicTags = $$('.topic-tag');
 
+const topicName = $('#topic-name');
 const progressText = $('#progress-text');
 const progressFill = $('#progress-fill');
 const questionNumber = $('#question-number');
@@ -706,6 +380,13 @@ const feedbackText = $('#feedback-text');
 const feedbackExplanation = $('#feedback-explanation');
 const nextBtn = $('#next-btn');
 const quizCard = $('#quiz-card');
+
+const loadingOverlay = $('#loading-overlay');
+const loadingText = $('#loading-text');
+const errorOverlay = $('#error-overlay');
+const errorMsg = $('#error-msg');
+const errorRetryBtn = $('#error-retry-btn');
+const errorBackBtn = $('#error-back-btn');
 
 const resultBadge = $('#result-badge');
 const resultTitle = $('#result-title');
@@ -726,17 +407,117 @@ function showPage(pageId) {
   $(`#${pageId}`).classList.add('active');
 }
 
-// ===== 生成题目 =====
-function generateQuestions(topic) {
-  // 尝试匹配预设题库
-  for (const [key, questions] of Object.entries(MOCK_QUESTIONS)) {
-    if (topic.includes(key) || key.includes(topic)) {
-      return shuffleArray([...questions]).slice(0, randomInt(5, 10));
-    }
+// ===== 加载状态 =====
+function showLoading(text) {
+  loadingText.textContent = text || 'AI 正在为你生成题目...';
+  loadingOverlay.classList.add('show');
+}
+
+function hideLoading() {
+  loadingOverlay.classList.remove('show');
+}
+
+function showError(msg) {
+  errorMsg.textContent = msg || '生成题目失败，请稍后重试';
+  errorOverlay.classList.add('show');
+}
+
+function hideError() {
+  errorOverlay.classList.remove('show');
+}
+
+// ===== DeepSeek API 调用 =====
+async function generateQuestionsFromAPI(topic) {
+  const questionCount = Math.floor(Math.random() * 5) + 5; // 5-9
+
+  const prompt = `你是一个专业的教育出题专家。请为"${topic}"这个主题生成${questionCount}道选择题。
+
+要求：
+1. 每道题有4个选项（A/B/C/D），只有一个正确答案
+2. 题目要有教育意义，难度适中
+3. 每道题附带简短的解析
+4. 严格按照以下JSON格式返回，不要添加任何其他文字：
+
+[
+  {
+    "question": "题目内容",
+    "options": [
+      {"label": "A", "text": "选项A内容"},
+      {"label": "B", "text": "选项B内容"},
+      {"label": "C", "text": "选项C内容"},
+      {"label": "D", "text": "选项D内容"}
+    ],
+    "answer": "正确答案的标签，如A",
+    "explanation": "答案解析"
+  }
+]
+
+请直接返回JSON数组，不要包含markdown代码块标记或其他文字。`;
+
+  const response = await fetch(DEEPSEEK_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: '你是一个专业的教育出题助手，只返回JSON格式的数据，不添加任何额外文字。' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.8,
+      max_tokens: 4096
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    throw new Error(`API 请求失败 (${response.status}): ${errText || response.statusText}`);
   }
 
-  // 无匹配则使用通用题库
-  return shuffleArray([...GENERAL_QUESTIONS]).slice(0, randomInt(5, 10));
+  const data = await response.json();
+
+  if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+    throw new Error('API 返回数据格式异常');
+  }
+
+  let content = data.choices[0].message.content.trim();
+
+  // 清理可能的 markdown 代码块标记
+  content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+
+  let questions;
+  try {
+    questions = JSON.parse(content);
+  } catch (e) {
+    throw new Error('AI 返回的数据格式不正确，无法解析题目');
+  }
+
+  if (!Array.isArray(questions) || questions.length === 0) {
+    throw new Error('AI 未生成有效的题目');
+  }
+
+  // 验证并标准化题目格式
+  return questions.map((q, i) => ({
+    question: q.question || `题目 ${i + 1}`,
+    options: (q.options || []).map((opt, j) => ({
+      label: opt.label || String.fromCharCode(65 + j),
+      text: opt.text || ''
+    })),
+    answer: q.answer || 'A',
+    explanation: q.explanation || '暂无解析'
+  }));
+}
+
+// ===== Mock 备用生成 =====
+function generateQuestionsFromMock(topic) {
+  for (const [key, questions] of Object.entries(MOCK_QUESTIONS)) {
+    if (topic.includes(key) || key.includes(topic)) {
+      return shuffleArray([...questions]).slice(0, randomInt(5, 5));
+    }
+  }
+  return shuffleArray([...GENERAL_QUESTIONS]).slice(0, randomInt(5, 5));
 }
 
 function shuffleArray(arr) {
@@ -752,7 +533,7 @@ function randomInt(min, max) {
 }
 
 // ===== 开始学习 =====
-function startQuiz(topic) {
+async function startQuiz(topic) {
   if (!topic.trim()) {
     topicInput.focus();
     topicInput.style.borderColor = 'var(--red)';
@@ -761,13 +542,51 @@ function startQuiz(topic) {
   }
 
   state.topic = topic.trim();
-  state.questions = generateQuestions(state.topic);
   state.currentIndex = 0;
   state.answers = [];
   state.startTime = Date.now();
 
+  // 显示答题页 + 加载动画
   showPage('page-quiz');
-  renderQuestion();
+  topicName.textContent = state.topic;
+  quizCard.classList.add('hidden');
+  nextBtn.classList.add('hidden');
+  showLoading('AI 正在为你生成「' + state.topic + '」的题目...');
+
+  try {
+    // 尝试调用 DeepSeek API
+    if (DEEPSEEK_API_KEY === 'your-api-key-here') {
+      // 未配置 API Key，使用 Mock 数据
+      console.warn('未配置 DeepSeek API Key，使用本地题库');
+      await new Promise(r => setTimeout(r, 800)); // 模拟加载延迟
+      state.questions = generateQuestionsFromMock(state.topic);
+    } else {
+      state.questions = await generateQuestionsFromAPI(state.topic);
+    }
+
+    hideLoading();
+    quizCard.classList.remove('hidden');
+    renderQuestion();
+  } catch (err) {
+    hideLoading();
+    console.error('生成题目失败:', err);
+
+    // API 失败时尝试使用 Mock 数据
+    try {
+      state.questions = generateQuestionsFromMock(state.topic);
+      if (state.questions.length > 0) {
+        hideError();
+        quizCard.classList.remove('hidden');
+        renderQuestion();
+        return;
+      }
+    } catch (mockErr) {
+      // Mock 也失败
+    }
+
+    // 全部失败，显示错误
+    showError('生成题目失败：' + (err.message || '请检查网络连接后重试'));
+  }
 }
 
 // ===== 渲染题目 =====
@@ -789,9 +608,13 @@ function renderQuestion() {
   // 选项
   const optTexts = [$('#opt-a'), $('#opt-b'), $('#opt-c'), $('#opt-d')];
   q.options.forEach((opt, i) => {
-    optionBtns[i].dataset.label = opt.label;
-    optionBtns[i].querySelector('.option-label').textContent = opt.label;
-    optTexts[i].textContent = opt.text;
+    if (optionBtns[i]) {
+      optionBtns[i].dataset.label = opt.label;
+      optionBtns[i].querySelector('.option-label').textContent = opt.label;
+    }
+    if (optTexts[i]) {
+      optTexts[i].textContent = opt.text;
+    }
   });
 
   // 重置选项状态
@@ -805,7 +628,7 @@ function renderQuestion() {
 
   // 卡片动画
   quizCard.classList.remove('card-enter');
-  void quizCard.offsetWidth; // 触发 reflow
+  void quizCard.offsetWidth;
   quizCard.classList.add('card-enter');
 }
 
@@ -814,10 +637,8 @@ function selectAnswer(selectedLabel) {
   const q = state.questions[state.currentIndex];
   const isCorrect = selectedLabel === q.answer;
 
-  // 记录答案
   state.answers.push({ selected: selectedLabel, correct: isCorrect });
 
-  // 禁用所有选项
   optionBtns.forEach(btn => {
     btn.classList.add('disabled');
     if (btn.dataset.label === q.answer) {
@@ -828,7 +649,6 @@ function selectAnswer(selectedLabel) {
     }
   });
 
-  // 显示反馈
   feedback.classList.add('show');
   if (isCorrect) {
     feedback.classList.add('correct-feedback');
@@ -842,7 +662,6 @@ function selectAnswer(selectedLabel) {
   }
   feedbackExplanation.textContent = q.explanation;
 
-  // 显示下一题按钮
   const isLast = state.currentIndex >= state.questions.length - 1;
   nextBtn.querySelector('span').textContent = isLast ? '查看结果' : '下一题';
   nextBtn.classList.remove('hidden');
@@ -851,7 +670,6 @@ function selectAnswer(selectedLabel) {
 // ===== 下一题 / 查看结果 =====
 function goNext() {
   if (state.currentIndex >= state.questions.length - 1) {
-    // 答题结束
     state.endTime = Date.now();
     showResult();
     return;
@@ -871,7 +689,6 @@ function showResult() {
   const score = correct * 10;
   const timeSec = Math.round((state.endTime - state.startTime) / 1000);
 
-  // 评价
   let badge, title;
   if (rate >= 90) {
     badge = '🏆';
@@ -890,14 +707,11 @@ function showResult() {
   resultBadge.textContent = badge;
   resultTitle.textContent = title;
 
-  // 分数动画
   animateNumber(scoreNumber, 0, score, 1200);
 
-  // 环形进度
-  const circumference = 2 * Math.PI * 52; // r=52
+  const circumference = 2 * Math.PI * 52;
   const offset = circumference * (1 - rate / 100);
   scoreRingFill.style.strokeDasharray = circumference;
-  // 需要先重置再设置，触发动画
   scoreRingFill.style.strokeDashoffset = circumference;
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -905,13 +719,11 @@ function showResult() {
     });
   });
 
-  // 统计
   statCorrect.textContent = correct;
   statTotal.textContent = total;
   statRate.textContent = rate + '%';
   statTime.textContent = formatTime(timeSec);
 
-  // 高分撒花
   if (rate >= 70) {
     setTimeout(() => launchConfetti(), 600);
   }
@@ -922,7 +734,7 @@ function animateNumber(el, from, to, duration) {
   function update(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+    const eased = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.round(from + (to - from) * eased);
     if (progress < 1) requestAnimationFrame(update);
   }
@@ -996,7 +808,7 @@ function launchConfetti() {
   draw();
 }
 
-// ===== SVG 渐变注入（用于环形进度条） =====
+// ===== SVG 渐变注入 =====
 function injectSVGGradient() {
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = $('.score-ring');
@@ -1055,12 +867,24 @@ retryBtn.addEventListener('click', () => {
   state.answers = [];
   state.startTime = Date.now();
   showPage('page-quiz');
+  quizCard.classList.remove('hidden');
   renderQuestion();
 });
 
 changeTopicBtn.addEventListener('click', () => {
   topicInput.value = '';
   topicTags.forEach(t => t.classList.remove('selected'));
+  showPage('page-home');
+});
+
+// 错误页按钮
+errorRetryBtn.addEventListener('click', () => {
+  hideError();
+  startQuiz(state.topic);
+});
+
+errorBackBtn.addEventListener('click', () => {
+  hideError();
   showPage('page-home');
 });
 
